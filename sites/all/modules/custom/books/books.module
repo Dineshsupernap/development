@@ -1,0 +1,73 @@
+<?php
+
+
+function books_form_alter(&$form, &$form_state, $form_id){
+	//print'<pre>';print_r($form_id);exit;
+if($form_id == 'page_node_form'){	
+$form['#validate'][] = 'google_isbn_to_id';
+//print'<pre>';print_r($form['#validate']);exit;
+}
+}
+function google_isbn_to_id($form, $form_state){
+//print'<pre>';print_r($form_state['node']->field_isbn);exit;
+$isbn = $form_state['values']['field_user']['und']['0']['value'];
+	//print'<pre>';print_r($form_state);exit;
+	$user_details = user_load_by_name('qtl user');
+	$internal_role_name = 'QTL Role';
+	$external_role_name = 'External Role';
+	$external_role = user_role_load_by_name('External Role');
+	$internal_role = user_role_load_by_name('QTL Role');
+if($isbn == 1){
+	$role = '';
+  user_multiple_role_edit(array($user_details->uid), 'add_role', $external_role->rid);
+  user_multiple_role_edit(array($user_details->uid), 'remove_role', $internal_role->rid);
+}else{
+
+$role = '';
+  user_multiple_role_edit(array($user_details->uid), 'add_role', $internal_role->rid);
+  user_multiple_role_edit(array($user_details->uid), 'remove_role', $external_role->rid);	
+	
+}	
+	
+}
+function books_comment_presave($comment) {
+  // Remove leading & trailing spaces from the comment subject.
+  $comment->subject = trim($comment->subject);
+  $comment->subject = 'BABA';
+  $comment->comment_body['und']['0']['value'] = 'BABAmass';
+  //print'<pre>';print_r($comment);exit;
+}
+function books_form_comment_form_alter(&$form, &$form_state, $form_id) {
+  $form['#validate'][] = 'mymodule_comment_validate';
+  //print'<pre>';print_r($form);exit;
+}
+
+function mymodule_comment_validate($form, &$form_state) {
+	//print'<pre>';print_r($form_state);exit;
+  /**
+   * Validate the comment.
+   * $form_state['values']['name'] is the name of the user who wrote the comment;
+   * $form_state['values']['is_anonymous'] is TRUE if the user is anonymous (not logged in);
+   * $form_state['values']['mail'] is the email address of who wrote the comment;
+   * $form_state['values']['homepage'] is the URL of the website of who wrote the comment;
+   * $form_state['values']['subject'] is the title of the comment;
+   * $form_state['values']['comment'] is the text of the comment;
+   * $form_state['values']['language'] is the language associated with the comment;
+   * $form_state['values']['uid'] is the user ID of who wrote the comment.
+   * $form_state['comment'] is the comment object.
+   */
+}
+
+/* function books_init(){
+		global $user;
+		//echo'<pre>';print_r($user); 
+	if(array_keys($user->roles,'QTL Role')){
+		if(arg(1) == '4'){
+			return TRUE;
+		}else{
+			drupal_access_denied(); 
+		}
+	}
+}
+
+ */
